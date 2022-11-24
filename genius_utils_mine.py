@@ -87,9 +87,10 @@ class SketchExtractor:
                 # 对于第一个关键词而言，前面的都需要[MASK]，后面再加一个空格
                 if i == 0 and id != 0:  # mask for the begining
                     masked_text.append(f'{mask}{sep}')
-                # 后面两个在中文中应该用不上
-                if sep == '' and id - all_ids[i - 1] == 2:  # a space in between
-                    masked_text.append(s[id-1])
+                # if sep == '' and id - all_ids[i - 1] == 2:  # a space in between
+                #     masked_text.append(s[id-1])
+                if sep == '' and id - all_ids[i-1] == 2:
+                    masked_text.append(f'{sep}{mask}{sep}')
                 if id - all_ids[i - 1] > 2:  # something in between
                     masked_text.append(f'{sep}{mask}{sep}')
                 masked_text.append(s[id])
