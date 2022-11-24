@@ -1,6 +1,5 @@
 import numpy as np
 import nltk
-nltk.download('stopwords')
 nltk.download('punkt')
 from nltk.tokenize import sent_tokenize
 import transformers
@@ -14,7 +13,7 @@ args = parser.parse_args()
 
 
 # pretrained checkpoint:
-model_checkpoint = 'fnlp/bart-base-chinese'  
+model_checkpoint = '../model_hub/genius-base-chinese'
 tokenizer = BertTokenizer.from_pretrained(model_checkpoint)
 
 
@@ -24,7 +23,7 @@ tokenizer = BertTokenizer.from_pretrained(model_checkpoint)
 
 # load the preprocessed dataset with the four kinds of sketches
 from datasets import load_from_disk
-dataset_path = '../saved_datasets/chinese_clean_passages_80m_with_sketch' 
+dataset_path = '../data/data_with_sketch'
 dataset_name = dataset_path.split('/')[-1]
 dataset_with_sketch = load_from_disk(dataset_path)
 print(dataset_with_sketch)
@@ -45,10 +44,11 @@ def preprocess_function(examples):
     return model_inputs
 
 import random
-N = 20000000
-tokenized_dataset = dataset_with_sketch['train'].select(random.sample(range(80000000),k=N)).map(preprocess_function, batched=True, 
-                                        remove_columns=dataset_with_sketch['train'].column_names,
-                                         batch_size=10000,num_proc=25)
+# 这里我们的数据有40133条，
+N = 40133
+tokenized_dataset = dataset_with_sketch.select(random.sample(range(40133),k=N)).map(preprocess_function, batched=True,
+                                        remove_columns=dataset_with_sketch.column_names,
+                                         batch_size=64,num_proc=8)
 
 
 # ROUGE metric：
@@ -92,7 +92,7 @@ output_dir = f"../saved_models/{model_name}-{dataset_name}-{N}"
 training_args = Seq2SeqTrainingArguments(
     output_dir=output_dir,
     evaluation_strategy="steps",
-    eval_steps = 10000,      
+    eval_steps = 500,
     save_strategy = 'epoch',
     save_total_limit = num_train_epochs,
     fp16 = True,
@@ -107,7 +107,7 @@ training_args = Seq2SeqTrainingArguments(
 
 data_collator = DataCollatorForSeq2Seq(tokenizer, model=model)
 
-val_dataset = tokenized_dataset.select(range(10000))
+val_dataset = tokenized_dataset.select(range(1000))
 
 trainer = Seq2SeqTrainer(
     model,
