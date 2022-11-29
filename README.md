@@ -14,6 +14,7 @@ pip install transformers
 pip install dataset
 pip install nltk
 pip install rouge_score
+pip install rouge
 ```
 
 # 说明
