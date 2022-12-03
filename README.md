@@ -70,8 +70,8 @@ pip install rouge
 	```python
 	# sega-chinese
 	from transformers import BertTokenizer, BartForConditionalGeneration, Text2TextGenerationPipeline
-	checkpoint = '../model_hub//genius-base-chinese'
-	# checkpoint = '../saved_models/genius-base-chinese-data_with_sketch-40133/checkpoint-3765/'
+	# checkpoint = '../model_hub//genius-base-chinese'
+	checkpoint = '../saved_models/genius-base-chinese-data_with_sketch-40133/checkpoint-3765/'
 	tokenizer = BertTokenizer.from_pretrained(checkpoint)
 	sega_model = BartForConditionalGeneration.from_pretrained(checkpoint)
 	sega_generator = Text2TextGenerationPipeline(sega_model, tokenizer, device=0)
